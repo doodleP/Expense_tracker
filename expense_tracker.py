@@ -1,9 +1,17 @@
 import mysql.connector
-from tabulate import tabulate
+import pandas as pd
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 conn = mysql.connector.connect(
-    host="localhost", user=" root", password="shreya3112", database="expense_tracker"
+    host="localhost",
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME")
 )
+
 cursor = conn.cursor()
 
 def add_entry():
@@ -25,10 +33,14 @@ def view_entries():
     records = cursor.fetchall()
 
     if not records:
-        print("No expenses recorded yet.")
+        print("Oh, it's empty here. Fill in some records!")
         return
     
-    print(tabulate(records, headers=["ID", "Date", "Category", "Amount", "Description"], tablefmt="grid"))
+    df = pd.DataFrame(records, columns=["ID", "Date", "Category", "Amount", "Description"])
+    print(df.to_string(index=False))
+
+    total = df["Amount"].sum()
+    print("\nTotal expenses:", total)
 
 def del_entry():
     view_entries()
@@ -37,12 +49,29 @@ def del_entry():
     conn.commit()
     print("Entry deleted successfully!")
 
+def export_file():
+    cursor.execute("SELECT * FROM expense")
+    records = cursor.fetchall()
+
+    if not records:
+        print("It's empty here.")
+        return
+
+    df = pd.DataFrame(records, columns=["ID", "Date", "Category", "Amount", "Description"])
+
+    file_name = "expenses_export.xlsx"
+    df.to_excel(file_name, index=False)
+
+    print(f"\nYour file is saved!")
+
+
 while True:
     print("Expense Tracker using MySQL")
     print("\nPress (1) to add entry")
     print("\nPress (2) to view all entries")
     print("\nPress (3) to delete entry")
-    print("\nPress (4) to exit.")
+    print("\nPress (4) to export the records into excel file.")
+    print("\nPress (5) to exit.")
 
     choice = int(input("Choose your option: "))
 
@@ -53,6 +82,8 @@ while True:
     elif choice == 3:
         del_entry()
     elif choice == 4:
+        export_file()
+    elif choice == 5:
         print("Exited Program. Goodbye!")
         break
     else:
