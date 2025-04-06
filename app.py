@@ -21,9 +21,17 @@ cursor = conn.cursor()
 def index():
     cursor.execute("SELECT * FROM expense")
     records = cursor.fetchall()
+
+    if not records:
+        table = '<h3>Whoops! Nothing here yet. Fill in some entries!</h3>'
+
+    else:
     
-    df = pd.DataFrame(records, columns = ['ID', 'Date', 'Category', 'Amount', 'Description'])
-    table = df.to_html(classes='table table-striped', index=False, border=0, justify='center')
+        df = pd.DataFrame(records, columns = ['ID', 'Date', 'Category', 'Amount', 'Description'])
+
+        df['Delete'] = df['ID'].apply(lambda x: f'<a href="/delete/{x}" class="del-btn">🗑️</a>')
+        df.drop('ID', axis=1, inplace=True)
+        table = df.to_html(classes='table table-striped', index=False, escape=False, border=0, justify='center')
 
     return render_template("index.html", table = table)
 
