@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Delius&family=Fuzzy+Bubbles:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="heading">💸 EXPENSE TRACKER 💸</h1>
+
+        <form method="POST" action="/add_expense">
+            <div class="bar">
+
+                <div>
+                    <input type="date" name="date" required>
+                </div>
+                <div>
+                    <input type="text" name="category" placeholder="Category" required>
+                </div>
+                <div>
+                    <input type="number" name="amount" step="0.01" placeholder="Amount" required>
+                </div>
+                <div>
+                    <input type="text" name="description" placeholder="Description">
+                </div>
+                <div>
+                    <button type="submit" class="btn">Add</button>
+                </div>
+
+            </div>
+        </form>
+
+        <div>
+            <h3 class="table-heading">Your Spendings</h3>
+            {{ table|safe }}
+        </div>
+    </div>
+</body>
+</html>
